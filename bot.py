@@ -13,7 +13,7 @@ async def lookup_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Masukkan 6 digit angka BIN yang valid.")
         return
 
-    url = f"https://lookup.binlist.net/{bin_number}"
+    url = f"https://data.handyapi.com/bin/{bin_number}"
     headers = {'Accept-Version': '3'}
     response = requests.get(url, headers=headers)
 
@@ -21,11 +21,11 @@ async def lookup_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
         data = response.json()
         result = f"""
 🔎 Info BIN {bin_number}:
-• Scheme: {data.get('scheme', 'N/A')}
-• Type: {data.get('type', 'N/A')}
-• Brand: {data.get('brand', 'N/A')}
-• Bank: {data.get('bank', {}).get('name', 'N/A')}
-• Negara: {data.get('country', {}).get('name', 'N/A')}
+• Scheme: {data.get('Scheme', 'N/A')}
+• Type: {data.get('Type', 'N/A')}
+• Brand: {data.get('CardTier', 'N/A')}
+• Bank: {data.get('Issuer', 'N/A')}
+• Negara: {data.get('Country', {}).get('Name', 'N/A')}
         """.strip()
     else:
         result = "BIN tidak ditemukan atau API error."
