@@ -46,11 +46,11 @@ async def lookup_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # 🔗 Panggil API binlist
-url = f"https://data.handyapi.com/bin/{bin_number}"
+    url = f"https://data.handyapi.com/bin/{bin_number}"
     headers = {'Accept-Version': '3'}
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # akan men-trigger exception jika status code != 200
         data = response.json()
         result = f"""
 🔎 Info BIN {bin_number}:
@@ -60,8 +60,9 @@ url = f"https://data.handyapi.com/bin/{bin_number}"
 • Bank: {data.get('Issuer', 'N/A')}
 • Negara: {data.get('Country', {}).get('Name', 'N/A')}
         """.strip()
-    else:
-        result = "❌ BIN tidak ditemukan atau API error."
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error saat akses API: {e}")
+        result = "❌ Terjadi kesalahan saat mengambil data."
 
     await update.message.reply_text(result)
 
