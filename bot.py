@@ -1,0 +1,40 @@
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
+import requests
+
+BOT_TOKEN = '7749680839:AAEqXGBPbfw8ZSAtD3ANByXvNHvXqjRnjfo'
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Halo! Kirimkan 6 digit BIN (contoh: 457173) untuk mendapatkan info kartu.")
+
+async def lookup_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    bin_number = update.message.text.strip()
+    if not bin_number.isdigit() or len(bin_number) != 6:
+        await update.message.reply_text("Masukkan 6 digit angka BIN yang valid.")
+        return
+
+    url = f"https://lookup.binlist.net/{bin_number}"
+    headers = {'Accept-Version': '3'}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        result = f"""
+🔎 Info BIN {bin_number}:
+• Scheme: {data.get('scheme', 'N/A')}
+• Type: {data.get('type', 'N/A')}
+• Brand: {data.get('brand', 'N/A')}
+• Bank: {data.get('bank', {}).get('name', 'N/A')}
+• Negara: {data.get('country', {}).get('name', 'N/A')}
+        """.strip()
+    else:
+        result = "BIN tidak ditemukan atau API error."
+
+    await update.message.reply_text(result)
+
+# Set up bot
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, lookup_bin))
+
+app.run_polling()
