@@ -23,7 +23,7 @@ async def lookup_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
 🔎 Info BIN {bin_number}:
 • Scheme: {data.get('Scheme', 'N/A')}
 • Type: {data.get('Type', 'N/A')}
-• Brand: {data.get('CardTier', 'N/A')}
+• CardTier: {data.get('CardTier', 'N/A')}
 • Bank: {data.get('Issuer', 'N/A')}
 • Negara: {data.get('Country', {}).get('Name', 'N/A')}
         """.strip()
